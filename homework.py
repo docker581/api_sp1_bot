@@ -1,10 +1,9 @@
 import os
 import time
-
 import requests
 import telegram
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 load_dotenv()
 
 PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
