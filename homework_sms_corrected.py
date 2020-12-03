@@ -31,8 +31,8 @@ def get_status(user_id):
     )
     try:
         status_online = status.json()['response'][0].get('online')
-    except:
-        raise TypeError('Wrong response!')
+    except requests.exceptions.RequestException as err:
+        raise SystemExit(err)
     return status_online
 
 

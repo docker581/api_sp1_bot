@@ -3,6 +3,12 @@ import time
 import requests
 import telegram
 
+import logging
+logging.basicConfig(
+    level=logging.DEBUG, 
+    format='%(asctime)s %(levelname)s:%(message)s',
+)
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,7 +18,11 @@ CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
 def parse_homework_status(homework):
-    homework_name = homework['homework_name']
+    homework_name = homework.get('homework_name')
+    if homework_name == None:
+        print("Не удалось найти ключ homework['homework_name']")
+    if homework['status'] == None:
+        print("Не удалось найти ключ homework['status']")   
     if homework['status'] == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
@@ -23,17 +33,19 @@ def parse_homework_status(homework):
 
 def get_homework_statuses(current_timestamp):
     headers = {'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'}
-    params={'from_date':current_timestamp}
+    from_date = (int(time.time()) if current_timestamp is None 
+        else current_timestamp)        
+    params={'from_date':from_date}
     try:
         homework_statuses = requests.get(
-            ('https://praktikum.yandex.ru/api/user_api/'
-            f'homework_statuses/'), 
+            'https://praktikum.yandex.ru/api/user_api/homework_statuses/', 
             headers=headers,
             params=params,
         )
-    except:
-        raise TypeError('Wrong response!')
-    return homework_statuses.json()
+    except requests.exceptions.RequestException as err:
+        logging.error(err)
+        raise SystemExit(err)
+    return homework_statuses.json()        
 
 
 def send_message(message, bot_client):
