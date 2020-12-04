@@ -26,15 +26,19 @@ def parse_homework_status(homework):
     if homework['status'] == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
-        verdict = ('Ревьюеру всё понравилось, '
-        'можно приступать к следующему уроку.')
+        verdict = (
+            'Ревьюеру всё понравилось, '
+            'можно приступать к следующему уроку.'
+        )
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homework_statuses(current_timestamp):
     headers = {'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'}
-    from_date = (int(time.time()) if current_timestamp is None 
-        else current_timestamp)        
+    from_date = (
+        int(time.time()) if current_timestamp is None 
+        else current_timestamp
+    )        
     params={'from_date':from_date}
     try:
         homework_statuses = requests.get(
@@ -65,7 +69,7 @@ def main():
                 ),
             current_timestamp = new_homework.get(
                 'current_date', 
-                current_timestamp,
+                int(time.time()),
             )  
             time.sleep(1200)  
 
